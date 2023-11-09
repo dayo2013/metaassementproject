@@ -6,9 +6,12 @@ pragma solidity ^0.8.9;
 contract Assessment {
     address payable public owner;
     uint256 public balance;
+    uint256 public number;
+    address public lastAddr;
 
     event Deposit(uint256 amount);
     event Withdraw(uint256 amount);
+    event Number(uint256 number);
 
     constructor(uint initBalance) payable {
         owner = payable(msg.sender);
@@ -34,6 +37,23 @@ contract Assessment {
         // emit the event
         emit Deposit(_amount);
     }
+    function setNumber(uint256 newNumber) public {
+        number = newNumber;
+        lastAddr = msg.sender;
+        emit Number(number);
+    }
+    function increment() public {
+        number++;
+        lastAddr = msg.sender;
+    }
+    function decrement() public {
+        number--;
+        lastAddr = msg.sender;
+
+}
+function getNumber() public view returns (uint256) {
+    return number;
+}
 
     // custom error
     error InsufficientBalance(uint256 balance, uint256 withdrawAmount);

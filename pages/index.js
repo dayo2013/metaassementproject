@@ -7,8 +7,10 @@ export default function HomePage() {
   const [account, setAccount] = useState(undefined);
   const [atm, setATM] = useState(undefined);
   const [balance, setBalance] = useState(undefined);
+  const [number, setNumber] = useState(undefined);
+  const [newNumber, setNewNumber] = useState(0);
 
-  const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+  const contractAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
   const atmABI = atm_abi.abi;
 
   const getWallet = async() => {
@@ -59,6 +61,21 @@ export default function HomePage() {
     }
   }
 
+  const getNewNumber = async() => {
+    if (atm) {
+      setNewNumber((await atm.getNumber()).toNumber());
+    }
+  }
+
+  const setContractNumber = async(no) => {
+    if (atm) {
+      let tx = await atm.setNumber(no);
+      await tx.wait();
+      setNewNumber(no);
+      getNewNumber();
+    }
+  }
+
   const deposit = async() => {
     if (atm) {
       let tx = await atm.deposit(1);
@@ -92,10 +109,17 @@ export default function HomePage() {
 
     return (
       <div>
+        <p>New Number: {newNumber}</p>
         <p>Your Account: {account}</p>
         <p>Your Balance: {balance}</p>
         <button onClick={deposit}>Deposit 1 ETH</button>
         <button onClick={withdraw}>Withdraw 1 ETH</button>
+        <div>
+          <br/>
+          <input type="number" onChange={(e) => setNumber(e.target.value)}/>
+          <button onClick={() => setContractNumber(number)}>Set new Number</button>
+        </div>
+        <br/>
       </div>
     )
   }
@@ -107,8 +131,12 @@ export default function HomePage() {
       <header><h1>Welcome to the Metacrafters ATM!</h1></header>
       {initUser()}
       <style jsx>{`
+      body {
+        background: whitesmoke;
+      }
         .container {
-          text-align: center
+          text-align: center;
+          background: dodgerblue;
         }
       `}
       </style>
